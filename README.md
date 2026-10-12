@@ -4,70 +4,63 @@ A simple, fast, and light-weight task management web application built using Pyt
 
 Features
 
-Add Tasks: Easily create new to-do items using a simple form.
+-Add Tasks: Easily create new to-do items using a simple form.
 
-Inline Editing: Update task descriptions directly on the main page.
+-Inline Editing: Update task descriptions directly on the main page.
 
-Delete & Clear All: Remove individual completed tasks or purge the entire list in one click.
+-Delete & Clear All: Remove individual completed tasks or purge the entire list in one click.
 
-Dynamic Task Counter: Keep track of total active tasks in real-time.
+-Dynamic Task Counter: Keep track of total active tasks in real-time.
 
-Clean UI: Simple card layout with custom CSS styles.
+-Clean UI: Simple card layout with custom CSS styles.
 
-Django ORM & CSRF Protection: Secure database interactions and form submissions.
+-Django ORM & CSRF Protection: Secure database interactions and form submissions.
 
 Tech Stack
 
-Language: Python 3.x
+-Language: Python 3.x
 
-Framework: Django
+-Framework: Django
 
-Frontend: HTML5, CSS3, JavaScript
+-Frontend: HTML5, CSS3, JavaScript
 
-Database: SQLite (Default Django Database)
+-Database: SQLite (Default Django Database)
 
 Project Structure
 
-├── todo_project/
-│   ├── manage.py
-│   ├── todo_project/          # Project configuration directory
-│   │   ├── __init__.py
-│   │   ├── settings.py
-│   │   ├── urls.py
-│   │   └── wsgi.py
-│   └── todo/                  # To-Do Application directory
-│       ├── migrations/
-│       ├── templates/
-│       │   └── todo/
-│       │       └── index.html # Main UI view template
-│       ├── admin.py
-│       ├── apps.py
-│       ├── models.py          # Task data structure
-│       ├── views.py           # Application logic
-│       └── urls.py            # App route handling
-└── README.md
-
-
-Getting Started
-
-Follow these instructions to set up and run the project on your local machine.
-
-Prerequisites
-
-Ensure you have Python installed on your computer. You can verify this by running:
-
-python --version
-
+```text
+todo_project/
+├── manage.py
+├── db.sqlite3
+├── static/
+│   ├── css/
+│   │   └── style.css
+│   └── images/
+│       └── bg.png
+├── todo/
+│   ├── migrations/
+│   ├── templates/
+│   │   └── todo/
+│   │       └── list.html
+│   ├── __init__.py
+│   ├── admin.py
+│   ├── apps.py
+│   ├── models.py
+│   ├── urls.py
+│   └── views.py
+└── todo_project/
+    ├── __init__.py
+    ├── settings.py
+    ├── urls.py
+    └── wsgi.py
 
 Installation & Setup
-
-Clone the repository:
+1. Clone the repository:
 
 git clone https://github.com/your-username/django-todo-app.git
 cd django-todo-app
 
-
-Create and activate a virtual environment:
+2.Create and activate a virtual environment:
 
 Windows:
 
@@ -80,22 +73,19 @@ macOS / Linux:
 python3 -m venv venv
 source venv/bin/activate
 
-
-Install Django:
+3.Install Django:
 
 pip install django
 
-
-Apply Database Migrations:
+4.Apply Database Migrations:
 
 python manage.py makemigrations
 python manage.py migrate
 
-
-Start the Development Server:
+5.Start the Development Server:
 
 python manage.py runserver
 
+6.Access the Application:
+Open your browser and navigate to http://127.0.0.1:8000/.
 
-Access the Application:
-Open your browser and navigate to http://127.0.0.1:8000/
