@@ -1,1 +1,189 @@
+Step 1: Project Setup
+# Install Django
+pip install django
 
+# Create project and app
+django-admin startproject todo_project
+cd todo_project
+python manage.py startapp todo
+
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'todo',  # <--- Add this line
+]
+
+Step 2: Database Model (todo/models.py)
+from django.db import models
+
+class Todo(models.Model):
+    title = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.title
+
+Step 3: Application Views & Logic (todo/views.py)
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import Todo
+
+def todo_list(request):
+    todos = Todo.objects.all()
+
+    if request.method == "POST":
+        # Add Task
+        if "add_task" in request.POST:
+            title = request.POST.get("title")
+            if title:
+                Todo.objects.create(title=title)
+            return redirect("todo_list")
+
+        # Edit Task
+        if "edit_task" in request.POST:
+            task_id = request.POST.get("task_id")
+            new_title = request.POST.get("new_title")
+            todo = get_object_or_404(Todo, id=task_id)
+            todo.title = new_title
+            todo.save()
+            return redirect("todo_list")
+
+        # Delete Single Task
+        if "delete_task" in request.POST:
+            task_id = request.POST.get("task_id")
+            todo = get_object_or_404(Todo, id=task_id)
+            todo.delete()
+            return redirect("todo_list")
+
+        # Clear All Tasks
+        if "clear_all" in request.POST:
+            Todo.objects.all().delete()
+            return redirect("todo_list")
+
+    return render(request, "todo/list.html", {
+        "todos": todos,
+        "task_count": todos.count()
+    })
+
+Step 4: URL Routing
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('', views.todo_list, name='todo_list'),
+]
+
+from django.contrib import admin
+from django.urls import path, include
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('', include('todo.urls')),
+]
+
+Step 5: HTML Template (todo/templates/todo/list.html)
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Django Todo App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .todo-container {
+            width: 400px;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        h2 { text-align: center; margin-bottom: 20px; }
+        .input-group { display: flex; gap: 10px; margin-bottom: 20px; }
+        .input-group input { flex: 1; padding: 10px; border-radius: 6px; border: 1px solid #ccc; }
+        .btn { padding: 8px 12px; border: none; border-radius: 6px; cursor: pointer; }
+        .add-btn { background: #6c5ce7; color: white; }
+        .task { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #f9f9f9; border-radius: 6px; margin-bottom: 10px; }
+        .task-text { flex: 1; }
+        .edit-form { display: flex; gap: 5px; flex: 1; }
+        .btn-edit { background: #f39c12; color: white; }
+        .btn-delete { background: #e74c3c; color: white; }
+        .btn-save { background: #2ecc71; color: white; }
+        .footer { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; }
+        .clear-btn { background: #e74c3c; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="todo-container">
+        <h2>Todo List</h2>
+
+        <!-- ADD TASK -->
+        <form method="POST">
+            {% csrf_token %}
+            <div class="input-group">
+                <input type="text" name="title" placeholder="Add a new task..." required>
+                <button type="submit" name="add_task" class="btn add-btn">+</button>
+            </div>
+        </form>
+
+        <!-- TASK LIST -->
+        {% for todo in todos %}
+            <div class="task">
+                <!-- DISPLAY TEXT -->
+                <div id="text-{{ todo.id }}" class="task-text">{{ todo.title }}</div>
+
+                <!-- EDIT FORM (Hidden by default) -->
+                <form method="POST" id="edit-{{ todo.id }}" class="edit-form" style="display:none;">
+                    {% csrf_token %}
+                    <input type="hidden" name="task_id" value="{{ todo.id }}">
+                    <input type="text" name="new_title" value="{{ todo.title }}" required>
+                    <button type="submit" name="edit_task" class="btn btn-save">✔</button>
+                </form>
+
+                <!-- BUTTONS -->
+                <div style="display: flex; gap: 5px;">
+                    <button type="button" onclick="enableEdit({{ todo.id }})" class="btn btn-edit">✏</button>
+                    <form method="POST" style="margin: 0;">
+                        {% csrf_token %}
+                        <input type="hidden" name="task_id" value="{{ todo.id }}">
+                        <button type="submit" name="delete_task" class="btn btn-delete">🗑</button>
+                    </form>
+                </div>
+            </div>
+        {% empty %}
+            <p style="text-align: center; color: #888;">No tasks yet!</p>
+        {% endfor %}
+
+        <!-- FOOTER -->
+        <div class="footer">
+            <span>Tasks: {{ task_count }}</span>
+            {% if task_count > 0 %}
+                <form method="POST" style="margin: 0;">
+                    {% csrf_token %}
+                    <button type="submit" name="clear_all" class="clear-btn">Clear All</button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        function enableEdit(id) {
+            document.getElementById("text-" + id).style.display = "none";
+            document.getElementById("edit-" + id).style.display = "flex";
+        }
+    </script>
+</body>
+</html>
+
+Step 6: Run the Server
+python manage.py makemigrations
+python manage.py migrate
+python manage.py runserver
