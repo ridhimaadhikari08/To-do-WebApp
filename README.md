@@ -14,3 +14,31 @@ Tech Stack
 - Backend: Python, Django
 - Frontend: HTML5, CSS3, JavaScript
 - Database: SQLite (default Django DB)
+
+ Project Directory Structure
+
+```text
+todo_project/
+├── manage.py
+├── db.sqlite3
+├── static/
+│   ├── css/
+│   │   └── style.css
+│   └── images/
+│       └── bg.png
+├── todo/
+│   ├── migrations/
+│   ├── templates/
+│   │   └── todo/
+│   │       └── list.html
+│   ├── __init__.py
+│   ├── admin.py
+│   ├── apps.py
+│   ├── models.py
+│   ├── urls.py
+│   └── views.py
+└── todo_project/
+    ├── __init__.py
+    ├── settings.py
+    ├── urls.py
+    └── wsgi.py
